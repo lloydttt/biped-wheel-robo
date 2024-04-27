@@ -8,7 +8,11 @@
         "exception": "cpp",
         "iosfwd": "cpp",
         "new": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "atomic": "cpp",
+        "optional": "cpp",
+        "functional": "cpp",
+        "typeinfo": "cpp"
     }
     // "C_Cpp.errorSquiggles": "disabled"
 }

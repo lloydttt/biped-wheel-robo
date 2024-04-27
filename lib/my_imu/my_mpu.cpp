@@ -1,12 +1,13 @@
 #include <Arduino.h>
-// #include "Wire.h"
+#include <Wire.h>
+#include <SPI.h>
 #include "I2Cdev.h"
 #include "MPU6050.h"
 
 #include "my_mpu.h"
-
+#include <BluetoothSerial.h>
 MPU6050 accelgyro;
- 
+BluetoothSerial SerialBT;
 unsigned long now, lastTime = 0;
 float dt;                                   //微分时间
  
@@ -28,11 +29,23 @@ float Px=1, Rx, Kx, Sx, Vx, Qx;             //x轴卡尔曼变量
 float Py=1, Ry, Ky, Sy, Vy, Qy;             //y轴卡尔曼变量
 float Pz=1, Rz, Kz, Sz, Vz, Qz;             //z轴卡尔曼变量
  
+// float kx = 9.0/7.0, ky = 9.0/7.0, kz = 9.0/7.0;
+
+void setupBluetooth() {
+  SerialBT.begin("test2233");
+//   SerialBT.register_callback(Bluetooth_Event); //设置事件回调函数 连接 断开 发送 接收
+  
+//   while(!SerialBT.connect(address)){
+//         Serial.println("Connecting...");
+//   }
+}
+
 void my_mpu_init()
 {
 
     // Serial.begin(115200);
- 
+  Wire.begin(19, 22, 400000); // SDA1,SCL1
+  Wire.setClock(400000);      // 400kHz I2C clock. Comment this line if having compilation difficulties
     accelgyro.initialize();                 //初始化
  
     unsigned short times = 200;             //采样次数
@@ -62,7 +75,7 @@ void my_mpu_run()
  
     aax = atan(accy / accz) * (-180) / pi;    //y轴对于z轴的夹角
     aay = atan(accx / accz) * 180 / pi;       //x轴对于z轴的夹角
-    aaz = atan(accz / accy) * 180 / pi;       //z轴对于y轴的夹角
+    aaz = atan(accx / accy) * 180 / pi;       //x轴对于y轴的夹角
  
     aax_sum = 0;                              // 对于加速度计原始数据的滑动加权滤波算法
     aay_sum = 0;
@@ -155,4 +168,26 @@ void my_mpu_run()
     Serial.print(agy);Serial.print(",");
     Serial.print(agz);Serial.println();
     
+}
+
+void btrun_test(){
+    // if(SerialBT.available()){
+    //     char temp = SerialBT.read();
+    //     switch(temp){
+    //         case 'U':
+    //             kx += 0.1;
+    //             Serial.println(kx);
+    //             break;
+    //         case 'D':
+    //             kx -= 0.1;
+    //             Serial.println(kx);
+    //             break;
+    //         case 'Z':
+    //             kx = 0;
+    //             Serial.println(kx);
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }
 }

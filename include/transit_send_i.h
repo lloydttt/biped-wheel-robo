@@ -9,8 +9,9 @@
 #include <sstream>
 
 BluetoothSerial SerialBT;
-
-
+uint8_t address[6]={0xE4,0x65,0xB8,0x6F,0xDB,0xCE};   //从机MAC地址
+void Bluetooth_Event(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); 
+bool flag = false;
 // // 报文结构体
 struct pkg {
     const uint16_t START_BYTE = 0xAA; // 帧头
@@ -26,7 +27,12 @@ struct pkg {
 
 // 初始化Classic Bluetooth
 void setupBluetooth() {
-  SerialBT.begin("test2233");
+  SerialBT.begin("test2233", true);
+  SerialBT.register_callback(Bluetooth_Event); //设置事件回调函数 连接 断开 发送 接收
+  
+  while(!SerialBT.connect(address)){
+        Serial.println("Connecting...");
+  }
 }
 
 
@@ -107,14 +113,45 @@ pkg packet_create(float x, float y, float z){
     return temp;
 }
 
+void Bluetooth_Event(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)  //蓝牙事件回调函数
+{
+    if(event == ESP_SPP_OPEN_EVT || event == ESP_SPP_SRV_OPEN_EVT) //蓝牙连接成功标志 
+    {                                                              //蓝牙主机和从机模式对应的标志不同，前面的是主机模式的，后面是从机模式
+        Serial.write("connection successful!\r\n");
+        flag = true;
+    }
+    else if(event == ESP_SPP_CLOSE_EVT)     //蓝牙断开连接标志
+    {
+        Serial.write("disconnect successful!\r\n");
+        flag = false;
+    }
+    else if(event == ESP_SPP_DATA_IND_EVT)  //数据接收标志
+    {
+        while(SerialBT.available())
+        {
+            Serial.write(SerialBT.read());
+        }
+        Serial.write("  receive complete! \r\n");
+    }
+    else if(event == ESP_SPP_WRITE_EVT)     //数据发送标志
+    {
+        Serial.write("  send complete! \r\n");
+    }
+}
+
+
 void trans_init() {
 //   Serial.begin(115200);
   setupBluetooth();
+
 }
 
 void trans_run() {
     pkg test = packet_create(26.333, 12.333, 15.333);
-    sendData(&test);
+    if(flag){
+        sendData(&test);
+    }
+
 
   // 处理其他任务
 //   delay(1000);
