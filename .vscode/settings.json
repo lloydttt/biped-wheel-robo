@@ -12,7 +12,8 @@
         "atomic": "cpp",
         "optional": "cpp",
         "functional": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "istream": "cpp"
     }
     // "C_Cpp.errorSquiggles": "disabled"
 }

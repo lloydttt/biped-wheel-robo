@@ -170,6 +170,13 @@ void my_mpu_run()
     
 }
 
+void data_transit(float &picth, float &roll, float &yaw){
+    picth = agx;
+    roll = agy;
+    yaw = agz;
+}
+
+
 void btrun_test(){
     // if(SerialBT.available()){
     //     char temp = SerialBT.read();

@@ -1,7 +1,7 @@
 #ifndef PID_DEFI_H
 #define PID_DEFI_H
 
-#prgram once
+#pragma once
 
 typedef struct{
     float kp, ki, kd;
