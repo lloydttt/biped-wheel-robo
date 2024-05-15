@@ -5,9 +5,9 @@
 #include "MPU6050.h"
 
 #include "my_mpu.h"
-#include <BluetoothSerial.h>
+// #include <BluetoothSerial.h>
 MPU6050 accelgyro;
-BluetoothSerial SerialBT;
+// BluetoothSerial SerialBT;
 unsigned long now, lastTime = 0;
 float dt;                                   //微分时间
  
@@ -31,14 +31,7 @@ float Pz=1, Rz, Kz, Sz, Vz, Qz;             //z轴卡尔曼变量
  
 // float kx = 9.0/7.0, ky = 9.0/7.0, kz = 9.0/7.0;
 
-void setupBluetooth() {
-  SerialBT.begin("test2233");
-//   SerialBT.register_callback(Bluetooth_Event); //设置事件回调函数 连接 断开 发送 接收
-  
-//   while(!SerialBT.connect(address)){
-//         Serial.println("Connecting...");
-//   }
-}
+
 
 void my_mpu_init()
 {
@@ -94,7 +87,7 @@ void my_mpu_run()
     
     aaxs[n_sample-1] = aax;
     aax_sum += aax * n_sample;
-    aax = (aax_sum / (11*n_sample/2.0)) * 9 / 7.0; //角度调幅至0-90°
+    aax = (aax_sum / (11*n_sample/2.0)) * 8.7 / 7.05; //角度调幅至0-90°
     aays[n_sample-1] = aay;                        //此处应用实验法取得合适的系数
     aay_sum += aay * n_sample;                     //本例系数为9/7
     aay = (aay_sum / (11*n_sample/2.0)) * 9 / 7.0;
@@ -164,37 +157,21 @@ void my_mpu_run()
  
     /* kalman end */
  
-    Serial.print(agx);Serial.print(",");
-    Serial.print(agy);Serial.print(",");
-    Serial.print(agz);Serial.println();
+    // Serial.print(agx);Serial.print(",");
+    // Serial.print(agy);Serial.print(",");
+    // Serial.print(agz);Serial.println();
     
 }
 
-void data_transit(float &picth, float &roll, float &yaw){
-    picth = agx;
-    roll = agy;
-    yaw = agz;
+void data_transit(float &pitch, float &roll, float &yaw){
+
+    pitch = agx;
+    if(pitch > 0){
+        pitch = 90 - pitch;
+    }else if(pitch < 0){
+        pitch = -(90 + pitch); 
+    }
+    yaw = agy;
+    roll = agz;
 }
 
-
-void btrun_test(){
-    // if(SerialBT.available()){
-    //     char temp = SerialBT.read();
-    //     switch(temp){
-    //         case 'U':
-    //             kx += 0.1;
-    //             Serial.println(kx);
-    //             break;
-    //         case 'D':
-    //             kx -= 0.1;
-    //             Serial.println(kx);
-    //             break;
-    //         case 'Z':
-    //             kx = 0;
-    //             Serial.println(kx);
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
-}
