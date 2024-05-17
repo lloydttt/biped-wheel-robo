@@ -19,7 +19,7 @@ void servo_ctrl(float phi_1, float phi_4);
 #define RB_PWM 15
 #define LA_PWM 33
 #define LB_PWM 32
-#define PI 3.1415926
+// #define PI 3.1415926
 
 int freq = 50;        // 频率
 int resolution0 = 10; // 分辨率，取值0~20，duty最大取值为2^resolution-1

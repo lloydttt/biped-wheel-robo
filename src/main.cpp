@@ -9,11 +9,12 @@
 // #include "trans_i.h"
 // #include <HardwareSerial.h>
 #include "servo_ctrl.h"
-
+// #include "bttest.h"
 
 bool test = 0;
 float phi_1_ini = 2.0893;
 float phi_4_ini = 2.6510-1.57;
+bool sendS = false;
 
 void task1(void *pvParameters) {
   while (1) {
@@ -32,23 +33,47 @@ void task2(void *pvParameters) {
 void task3(void *pvParameters) {
 
   while (1) {
-    
-    balance_ctrl();
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    if(Serial2.available() && !sendS){
+      char k = Serial2.read();
+      if(k == 'a'){
+        sendS = true;
+        Serial.println("驱动板通讯已连接，开始传输数据");
+      }
+    }
+    if(sendS){
+      balance_ctrl();
+
+    }
+    vTaskDelay(50 / portTICK_PERIOD_MS);
     // vTaskDelay(pdMS_TO_TICKS(100));
 
 
   }
 }
 
+// void task4(void *pvParameters) {
+
+//   while (1) {
+    
+//     ttt();
+    
+//     // vTaskDelay(pdMS_TO_TICKS(100));
+
+
+//   }
+// }
+
 void setup(){
   Serial.begin(115200);
-  Serial2.begin(9600);
+  Serial2.setTxBufferSize(2048);
+  Serial2.begin(9600, SERIAL_8E1);
   servo_init();
   my_mpu_init();
   balance_init();
   // imu_init();
   // trans_init();
+  // BT_init();
+
   servo_ctrl(phi_1_ini, phi_4_ini);
   // setupBluetooth();
   delay(1000);
@@ -79,6 +104,15 @@ void setup(){
         NULL,           // Task handle
         1               // Core number (0 for core 0, 1 for core 1)
   );
+  // xTaskCreatePinnedToCore(
+  //       task4,   // Task function
+  //       "bt_test",        // Task name
+  //       4096,          // Stack size
+  //       NULL,           // Task parameters
+  //       3,              // Priority
+  //       NULL,           // Task handle
+  //       1               // Core number (0 for core 0, 1 for core 1)
+  // );
 
 }
 

@@ -58,14 +58,28 @@
 //     }
 // }
 void trans(float dataToSend){
-//   static float dataToSend = 1.17;
+//   dataToSend = 1.17;
   byte byteArray[sizeof(float)];
   memcpy(byteArray, &dataToSend, sizeof(float));
+  byte start_k = 0xAA;
+  Serial2.write(start_k);
+//   Serial.println(start_k);
+//   Serial.println(dataToSend);
+//   Serial.write(byteArray, sizeof(float));
+
   Serial2.write(byteArray, sizeof(float));
+//   if(Serial2.available()){
+//     char a = Serial2.read();
+//     if(a == 'a'){
+//         Serial2.flush();
+//     }
+//   }
 //   dataToSend += 0.01;
 //   if(dataToSend > 100){
 //     dataToSend = 0.53;
 //   }
+
+    // Serial2.print('a');
 }
 
 
